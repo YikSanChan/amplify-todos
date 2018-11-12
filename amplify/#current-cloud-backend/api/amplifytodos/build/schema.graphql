@@ -81,6 +81,7 @@ input ModelTodoFilterInput {
 type Query {
   getTodo(id: ID!): Todo
   listTodos(filter: ModelTodoFilterInput, limit: Int, nextToken: String): ModelTodoConnection
+  searchTodos(filter: SearchableTodoFilterInput, sort: SearchableTodoSortInput, limit: Int, nextToken: Int): SearchableTodoConnection
 }
 
 input CreateTodoInput {
@@ -109,4 +110,83 @@ type Subscription {
   onCreateTodo: Todo @aws_subscribe(mutations: ["createTodo"])
   onUpdateTodo: Todo @aws_subscribe(mutations: ["updateTodo"])
   onDeleteTodo: Todo @aws_subscribe(mutations: ["deleteTodo"])
+}
+
+input SearchableStringFilterInput {
+  ne: String
+  eq: String
+  match: String
+  matchPhrase: String
+  matchPhrasePrefix: String
+  multiMatch: String
+  exists: Boolean
+  wildcard: String
+  regexp: String
+}
+
+input SearchableIDFilterInput {
+  ne: ID
+  eq: ID
+  match: ID
+  matchPhrase: ID
+  matchPhrasePrefix: ID
+  multiMatch: ID
+  exists: Boolean
+  wildcard: ID
+  regexp: ID
+}
+
+input SearchableIntFilterInput {
+  ne: Int
+  gt: Int
+  lt: Int
+  gte: Int
+  lte: Int
+  eq: Int
+  range: [Int]
+}
+
+input SearchableFloatFilterInput {
+  ne: Float
+  gt: Float
+  lt: Float
+  gte: Float
+  lte: Float
+  eq: Float
+  range: [Float]
+}
+
+input SearchableBooleanFilterInput {
+  eq: Boolean
+  ne: Boolean
+}
+
+input SearchableTodoFilterInput {
+  id: SearchableIDFilterInput
+  content: SearchableStringFilterInput
+  completed: SearchableBooleanFilterInput
+  and: [SearchableTodoFilterInput]
+  or: [SearchableTodoFilterInput]
+  not: SearchableTodoFilterInput
+}
+
+enum SearchableSortDirection {
+  asc
+  desc
+}
+
+enum SearchableTodoSortableFields {
+  id
+  content
+  completed
+}
+
+input SearchableTodoSortInput {
+  field: SearchableTodoSortableFields
+  direction: SearchableSortDirection
+}
+
+type SearchableTodoConnection {
+  items: [Todo]
+  nextToken: String
 }
